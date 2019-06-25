@@ -8,17 +8,21 @@ from keras.callbacks import LambdaCallback
 
 import wandb
 from wandb.keras import WandbCallback
-
 import plotutil
 from plotutil import PlotCallback
-
 wandb.init()
 config = wandb.config
+
+# class Config:
+#     pass
+
+# config = Config()
+# import sys
 
 config.repeated_predictions = False
 config.look_back = 20
 
-def load_data(data_type="airline"):
+def load_data(data_type="sin"):
     if data_type == "flu":
         df = pd.read_csv('flusearches.csv')
         data = df.flu.astype('float32').values

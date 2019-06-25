@@ -3,7 +3,7 @@ import pandas as pd
 
 from keras.models import Sequential
 from keras.layers import Dense, Flatten
-from keras.layers import LSTM, SimpleRNN, Dropout
+from keras.layers import CuDNNLSTM, SimpleRNN, Dropout, LSTM
 from keras.callbacks import LambdaCallback
 
 import wandb
@@ -16,10 +16,10 @@ wandb.init()
 config = wandb.config
 
 config.repeated_predictions = True
-config.look_back = 4
+config.look_back = 5
 
 
-def load_data(data_type="airline"):
+def load_data(data_type="sin"):
     if data_type == "flu":
         df = pd.read_csv('flusearches.csv')
         data = df.flu.astype('float32').values
@@ -63,7 +63,8 @@ testX = testX[:, :, np.newaxis]
 
 # create and fit the RNN
 model = Sequential()
-model.add(LSTM(5, input_shape=(config.look_back, 1)))
+model.add(CuDNNLSTM(20, input_shape=(config.look_back, 1)))
+#model.add(SimpleRNN(5, input_shape=(config.look_back, 1)))
 model.add(Dense(1))
 model.compile(loss='mae', optimizer='rmsprop')
 model.fit(trainX, trainY, epochs=1000, batch_size=40, validation_data=(testX, testY),  callbacks=[
